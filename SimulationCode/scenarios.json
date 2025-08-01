@@ -1,0 +1,93 @@
+{
+    "Simulation directory": "MacroAgingNatureSimulations",
+    "scenario_params": {
+        "Brain Aging": {
+            "directory": "brain",
+            "rd_invest": 0.0,
+            "num_years_invest": 10,
+            "mort_effect": 0.1,
+            "prod_effect": 0.35,
+            "fert_effect": 0.0,
+            "min_age_effect_felt": 40,
+            "initial_effect_period": 10,
+            "final_effect_period": 20
+        },
+        "Ovarian Aging": {
+            "directory": "reproductive_1yr",
+            "rd_invest": 0.0,
+            "num_years_invest": 10,
+            "mort_effect": 0.01,
+            "prod_effect": 0.02,
+            "fert_effect": 0.5,
+            "min_age_effect_felt": 40,
+            "initial_effect_period": 10,
+            "final_effect_period": 20
+        },
+        "1st Gen": {
+            "directory": "1st_gen",
+            "rd_invest": 0.0,
+            "num_years_invest": 10,
+            "mort_effect": 0.09,
+            "prod_effect": 0.08,
+            "fert_effect": 0.0,
+            "min_age_effect_felt": 65,
+            "initial_effect_period": 5,
+            "final_effect_period": 10
+        },
+        "1st Gen 18.5pct": {
+            "directory": "1st_gen_18pt5pct",
+            "rd_invest": 0.0,
+            "num_years_invest": 10,
+            "mort_effect": 0.15,
+            "prod_effect": 0.13,
+            "fert_effect": 0.0,
+            "min_age_effect_felt": 65,
+            "initial_effect_period": 5,
+            "final_effect_period": 10
+        },
+        "2nd Gen": {
+            "directory": "2nd_gen",
+            "rd_invest": 0.0,
+            "num_years_invest": 10,
+            "mort_effect": 0.41,
+            "prod_effect": 0.72,
+            "fert_effect": 0.0,
+            "min_age_effect_felt": 40,
+            "initial_effect_period": 10,
+            "final_effect_period": 20
+        },
+        "2nd Gen + OOC": {
+            "directory": "2nd_gen_ooc",
+            "rd_invest": 0.0,
+            "num_years_invest": 10,
+            "mort_effect": 0.41,
+            "prod_effect": 0.72,
+            "fert_effect": 0.0,
+            "min_age_effect_felt": 40,
+            "initial_effect_period": 8,
+            "final_effect_period": 16
+        },
+        "41 the new 40": {
+            "directory": "one_year_all",
+            "rd_invest": 0.0,
+            "num_years_invest": 10,
+            "mort_effect": 0.5,
+            "prod_effect": 0.5,
+            "fert_effect": 0.5,
+            "min_age_effect_felt": 40,
+            "initial_effect_period": 10,
+            "final_effect_period": 20
+        },
+        "66 the new 65": {
+            "directory": "one_year_all_65plus",
+            "rd_invest": 0.0,
+            "num_years_invest": 10,
+            "mort_effect": 0.5,
+            "prod_effect": 0.5,
+            "fert_effect": 0.5,
+            "min_age_effect_felt": 65,
+            "initial_effect_period": 10,
+            "final_effect_period": 20
+        }
+    }
+}
