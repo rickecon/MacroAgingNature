@@ -1,0 +1,17 @@
+name: macro-aging-env
+channels:
+- conda-forge
+dependencies:
+- python>=3.7.7, <3.13
+- numpy
+- ipython
+- setuptools
+- pandas>=1.2.5
+- matplotlib
+- black>=24.1.1
+- pytest
+- pip
+- pip:
+  - ogcore
+  - ogusa
+  - plotly-express
