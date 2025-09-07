@@ -68,27 +68,6 @@ def main(simulation_json):
         output_base=base_dir,
     )
     p.update_specifications(ogusa_default_params)
-    # read tax func params if they exist, else use Calibration to estimate
-    if os.path.exists(os.path.join(sim_dir, "baseline_tax_params.pkl")):
-        tax_params = safe_read_pickle(
-            os.path.join(sim_dir, "baseline_tax_params.pkl")
-        )
-    else:
-        c = Calibration(p, estimate_tax_functions=True, client=client)
-        # close and delete client bc cache is too large
-        d = c.get_dict()
-        tax_params = {
-            "etr_params": d["etr_params"],
-            "mtrx_params": d["mtrx_params"],
-            "mtry_params": d["mtry_params"],
-            "mean_income_data": d["mean_income_data"],
-            "frac_tax_payroll": d["frac_tax_payroll"],
-        }
-        pickle.dump(
-            tax_params,
-            open(os.path.join(sim_dir, "baseline_tax_params.pkl"), "wb"),
-        )
-    p.update_specifications(tax_params)
 
     # Update demographics using OG-Core demographics module
     # And find baseline demographic objects not returned by get_pop_objs
@@ -225,7 +204,6 @@ def main(simulation_json):
             output_base=scenario_directories[scenario],
         )
         p.update_specifications(ogusa_default_params)
-        p.update_specifications(tax_params)
         num_years_invest = 10  # number of years of investment (assume total invested evenly over these years)
         invest_per_year = (
             scenario_params[scenario]["rd_invest"] / num_years_invest
