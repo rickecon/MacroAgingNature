@@ -53,7 +53,6 @@ def main(simulation_json):
 
     # update some of these defaults that will be used in all simulations
     ogusa_default_params["tG1"] = 30
-    ogusa_default_params["tax_func_type"] = "GS"
     ogusa_default_params["RC_TPI"] = 1e-04
 
     """
