@@ -2,7 +2,7 @@ name: macro-aging-env
 channels:
 - conda-forge
 dependencies:
-- python>=3.7.7, <3.13
+- python>3.11, <3.14
 - numpy
 - ipython
 - setuptools
@@ -12,6 +12,7 @@ dependencies:
 - pytest
 - pip
 - pip:
-  - ogcore
-  - ogusa
+  - ogcore==0.14.8
+  - taxcalc==5.2.0
+  - ogusa==0.3.0
   - plotly-express

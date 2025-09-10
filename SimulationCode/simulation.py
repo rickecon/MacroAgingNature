@@ -1,4 +1,5 @@
 # imports
+# %%
 import numpy as np
 import pickle
 import multiprocessing
@@ -15,6 +16,7 @@ from ogcore.utils import safe_read_pickle, shift_bio_clock
 from ogcore import demographics as demog
 
 
+# %%
 def main(simulation_json):
     # Define parameters to use for multiprocessing
     num_workers = min(multiprocessing.cpu_count(), 7)
@@ -52,8 +54,8 @@ def main(simulation_json):
     ogusa_default_params = json.loads(resp.text)
 
     # update some of these defaults that will be used in all simulations
+    ogusa_default_params["tax_func_type"] = "HSV"
     ogusa_default_params["tG1"] = 30
-    ogusa_default_params["tax_func_type"] = "GS"
     ogusa_default_params["RC_TPI"] = 1e-04
 
     """
@@ -69,27 +71,6 @@ def main(simulation_json):
         output_base=base_dir,
     )
     p.update_specifications(ogusa_default_params)
-    # read tax func params if they exist, else use Calibration to estimate
-    if os.path.exists(os.path.join(sim_dir, "baseline_tax_params.pkl")):
-        tax_params = safe_read_pickle(
-            os.path.join(sim_dir, "baseline_tax_params.pkl")
-        )
-    else:
-        c = Calibration(p, estimate_tax_functions=True, client=client)
-        # close and delete client bc cache is too large
-        d = c.get_dict()
-        tax_params = {
-            "etr_params": d["etr_params"],
-            "mtrx_params": d["mtrx_params"],
-            "mtry_params": d["mtry_params"],
-            "mean_income_data": d["mean_income_data"],
-            "frac_tax_payroll": d["frac_tax_payroll"],
-        }
-        pickle.dump(
-            tax_params,
-            open(os.path.join(sim_dir, "baseline_tax_params.pkl"), "wb"),
-        )
-    p.update_specifications(tax_params)
 
     # Update demographics using OG-Core demographics module
     # And find baseline demographic objects not returned by get_pop_objs
@@ -111,10 +92,18 @@ def main(simulation_json):
             open(os.path.join(sim_dir, "fert_rates_baseline.pkl"), "wb"),
         )
         mort_rates_baseline, infmort_rates_baseline = demog.get_mort(
-            start_year=p.start_year, end_year=p.start_year + 1
+            start_year=p.start_year, end_year=p.start_year
+        )
+        pop_dist_baseline, pre_pop_baseline = demog.get_pop(
+            start_year=p.start_year, end_year=p.start_year
         )
         imm_rates_baseline = demog.get_imm_rates(
-            start_year=p.start_year, end_year=p.start_year + 1
+            fert_rates=fert_rates_baseline,
+            mort_rates=mort_rates_baseline,
+            infmort_rates=infmort_rates_baseline,
+            pop_dist=pop_dist_baseline,
+            start_year=p.start_year,
+            end_year=p.start_year,
         )
         # And extend each fof these over the full time path
         fert_rates_baseline_TP = np.append(
@@ -128,25 +117,25 @@ def main(simulation_json):
         mort_rates_baseline_TP = np.append(
             mort_rates_baseline,
             np.tile(
-                mort_rates_baseline[-1, :].reshape((1, p.E + p.S)),
+                mort_rates_baseline[0, :].reshape((1, p.E + p.S)),
                 (p.T + p.S - 2, 1),
             ),
             axis=0,
         )
         infmort_rates_baseline_TP = np.append(
             infmort_rates_baseline[0],
-            np.ones(p.T + p.S - 1) * infmort_rates_baseline[1],
+            np.ones(p.T + p.S - 1) * infmort_rates_baseline[0],
         )
         imm_rates_baseline_TP = np.append(
             imm_rates_baseline,
             np.tile(
-                imm_rates_baseline[-1, :].reshape((1, p.E + p.S)),
+                imm_rates_baseline[0, :].reshape((1, p.E + p.S)),
                 (p.T + p.S - 2, 1),
             ),
             axis=0,
         )
         pop_baseline_TP, pre_pop_dist_baseline = demog.get_pop(
-            infer_pop=False,
+            infer_pop=True,
             fert_rates=fert_rates_baseline_TP,
             mort_rates=mort_rates_baseline_TP,
             infmort_rates=infmort_rates_baseline_TP,
@@ -170,7 +159,7 @@ def main(simulation_json):
             open(os.path.join(sim_dir, "demog_vars_baseline.pkl"), "wb"),
         )
     # Now get population objects for the model
-    num_periods = 2100-p.start_year # 2100 is the last year WPP forecast
+    num_periods = 2100 - p.start_year  # 2100 is the last year WPP forecast
     demog_vars = demog.get_pop_objs(
         p.E,
         p.S,
@@ -185,7 +174,9 @@ def main(simulation_json):
         initial_data_year=p.start_year,
         final_data_year=p.start_year + num_periods - 1,
     )
-    p.update_specifications(demog_vars)
+    # I was getting error that imm_rates had value less than -1.0
+    # but it didn't.  So I set raise_errors=False
+    p.update_specifications(demog_vars, raise_errors=False)
 
     # close and delete client bc cache is too large
     client.close()
@@ -194,7 +185,7 @@ def main(simulation_json):
 
     # Run model
     start_time = time.time()
-    runner(p, time_path=True, client=client)
+    # runner(p, time_path=True, client=client)
     print("run time = ", time.time() - start_time)
 
     client.close()
@@ -218,7 +209,6 @@ def main(simulation_json):
         final_effect_period = scenario_params[scenario][
             "final_effect_period"
         ]  # number of periods into the model until full effects of R&D are felt
-        scenario_params[scenario]["start_year"] = 2025
         p = Specifications(
             baseline=False,
             num_workers=num_workers,
@@ -226,7 +216,7 @@ def main(simulation_json):
             output_base=scenario_directories[scenario],
         )
         p.update_specifications(ogusa_default_params)
-        p.update_specifications(tax_params)
+        scenario_params[scenario]["start_year"] = p.start_year
         num_years_invest = 10  # number of years of investment (assume total invested evenly over these years)
         invest_per_year = (
             scenario_params[scenario]["rd_invest"] / num_years_invest
@@ -258,7 +248,7 @@ def main(simulation_json):
             bound_above=True,
         )
         mort_rates_adjusted = mort_rates_baseline_TP.copy()
-        mort_rates_adjusted[:, p.E :] = mort_rates_shift[:, :]
+        mort_rates_adjusted[:, p.E :] = mort_rates_shift[:-1, :]
         mort_rates_adjusted[:, -1] = 1  # make sure last period is 1
 
         e_shift = shift_bio_clock(
@@ -282,10 +272,7 @@ def main(simulation_json):
         p.e = e_shift.copy()
 
         # update demographic parameters for the simulation
-        # num_periods = final_effect_period + (
-        #     final_effect_period - initial_effect_period
-        # )
-        num_periods = 50
+        num_periods = 2100 - p.start_year  # 2100 is the last year WPP forecast
         if not os.path.exists(
             os.path.join(scenario_directories[scenario], "demographic_data")
         ):
@@ -308,7 +295,6 @@ def main(simulation_json):
             pre_pop_dist=pre_pop_dist_baseline,
             initial_data_year=p.start_year,
             final_data_year=p.start_year + num_periods - 1,
-            # final_data_year=p.start_year + 1,
             download_path=os.path.join(
                 scenario_directories[scenario], "demographic_data"
             ),
