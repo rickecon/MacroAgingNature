@@ -17,7 +17,7 @@ from ogcore import demographics as demog
 
 
 # %%
-def main(simulation_json, sensitivity=False):
+def main(simulation_json):
     # Define parameters to use for multiprocessing
     num_workers = min(multiprocessing.cpu_count(), 7)
     client = Client(n_workers=num_workers)
@@ -30,13 +30,8 @@ def main(simulation_json, sensitivity=False):
 
     # Directories to save data
     cur_dir = os.path.dirname(os.path.realpath(__file__))
-    if not sensitivity:
-        sim_dir = os.path.join(cur_dir, "simulation_results")
-    else:
-        sim_dir = os.path.join(
-            cur_dir, "simulation_results", "SensitivitySimulations"
-        )
-    base_dir = os.path.join(cur_dir, "simulation_results", "baseline")
+    sim_dir = os.path.join(cur_dir, "simulation_results")
+    base_dir = os.path.join(sim_dir, "baseline")
     # set paths for each simulation
     scenario_directories = {}
     for k, v in sim_json["scenario_params"].items():
@@ -331,8 +326,5 @@ if __name__ == "__main__":
     parser.add_argument(
         "simulation_json", help="Path to JSON with simulation parameters"
     )  # positional arg
-    parser.add_argument(
-        "sensitivity", help="Boolean for whether running sensitivity simulations"
-    )  # positional arg
     args = parser.parse_args()
-    main(args.simulation_json, args.sensitivity)
+    main(args.simulation_json)

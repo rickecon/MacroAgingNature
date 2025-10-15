@@ -5,7 +5,7 @@ source activate macro-aging-env
 
 # Run simulations
 cd SimulationCode
-python simulation.py scenarios.json False
+python simulation.py scenarios.json
 
 # process results and save to CSV
 cd ..
