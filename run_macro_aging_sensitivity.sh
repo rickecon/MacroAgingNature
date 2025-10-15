@@ -35,7 +35,7 @@ conda activate macro-aging-env
 
 # Run simulations
 cd SimulationCode
-python simulation.py hi_low_parameterizations.json
+python simulation.py hi_low_parameterizations.json True
 
 # process results and save to CSV
 python process_results.py "simulation_results/SensitivitySimulations" hi_low_parameterizations.json "../Results/macro_aging_sensitivity_results.csv"
