@@ -16,3 +16,4 @@ dependencies:
   - ogcore==0.14.8
   - taxcalc==5.2.0
   - ogusa==0.3.0
+  - plotly-express
