@@ -183,9 +183,16 @@ def main(simulation_json):
     client = Client(n_workers=num_workers)
 
     # Run model
-    start_time = time.time()
-    # runner(p, time_path=True, client=client)
-    print("run time = ", time.time() - start_time)
+    # check if baseline has already been run
+    if os.path.exists(os.path.join(base_dir, "SS_vars.pkl")) and os.path.exists(
+        os.path.join(base_dir, "TPI_vars.pkl")
+    ):
+        print("Baseline already run")
+    else:
+        print("Running baseline")
+        start_time = time.time()
+        runner(p, time_path=True, client=client)
+        print("run time = ", time.time() - start_time)
 
     client.close()
     del client
