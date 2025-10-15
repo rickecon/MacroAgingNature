@@ -8,8 +8,9 @@ Data and code for article: "A GDP Approach to Measure Returns on Investment in A
    ```bash
    conda env create -f environment.yml
    ```
-3. Run the bash script to reproduce the results:
+3. Run the bash script to reproduce the results. This will take a long time.
    ```bash
    bash run_macro_aging.sh
+   bash run_macro_aging_sensitivity.sh
     ```
 4. All results will be saved in the `ResultsInPaper/macro_aging_results.csv` file and `ResultsInPaper/macro_aging_sensitivity_results.csv`. Individual figures from the paper will be saved in the `ResultsInPaper/figures/` directory.
