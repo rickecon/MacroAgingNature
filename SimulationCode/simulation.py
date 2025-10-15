@@ -47,8 +47,8 @@ def main(simulation_json):
     Read in OG-USA default parameters
     """
     resp = requests.get(
-        "https://raw.githubusercontent.com/PSLmodels/OG-USA/master/ogusa/" +
-        "ogusa_default_parameters.json"
+        "https://raw.githubusercontent.com/PSLmodels/OG-USA/master/ogusa/"
+        + "ogusa_default_parameters.json"
     )
     ogusa_default_params = json.loads(resp.text)
 
@@ -184,9 +184,9 @@ def main(simulation_json):
 
     # Run model
     # check if baseline has already been run
-    if os.path.exists(os.path.join(base_dir, "SS_vars.pkl")) and os.path.exists(
-        os.path.join(base_dir, "TPI_vars.pkl")
-    ):
+    if os.path.exists(
+        os.path.join(base_dir, "SS_vars.pkl")
+    ) and os.path.exists(os.path.join(base_dir, "TPI_vars.pkl")):
         print("Baseline already run")
     else:
         print("Running baseline")

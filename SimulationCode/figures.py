@@ -3,6 +3,7 @@ This file generates the figures in the paper, "A Macroeconomic Approach to
 Measure US Returns from Slowing Biological Aging", by Raiany Romanni, Nathaniel
 Hendrix, Richard W. Evans, and Jason DeBacker
 """
+
 # Import libraries
 import os
 import pickle
@@ -38,7 +39,7 @@ T1 = len(years1)
     infmort_rates_base_TP,
     imm_rates_base_TP,
     pop_dist_base_TP,
-    pre_pop_dist_base
+    pre_pop_dist_base,
 ) = pickle.load(open(os.path.join(main_dir, "demog_vars_baseline.pkl"), "rb"))
 # Create time series for basline population from 2025 to 2050
 base_pop_full_path, _ = get_pop(
@@ -61,57 +62,103 @@ tot_pop_2025_2050_base = base_pop_full_path.sum(axis=1)
 
 # Get total population time series from 2025 to 2050 for 1st-gen and 2nd-gen
 # scenarios
-tot_pop_2025_2050_1gen = pd.read_csv(
-    os.path.join(
-        main_dir, "1st_gen", "demographic_data", "population_distribution.csv"
-    ), header=None
-).sum(axis=1).to_numpy()[:T1]
+tot_pop_2025_2050_1gen = (
+    pd.read_csv(
+        os.path.join(
+            main_dir,
+            "1st_gen",
+            "demographic_data",
+            "population_distribution.csv",
+        ),
+        header=None,
+    )
+    .sum(axis=1)
+    .to_numpy()[:T1]
+)
 
-tot_pop_2025_2050_2gen = pd.read_csv(
-    os.path.join(
-        main_dir, "2nd_gen", "demographic_data", "population_distribution.csv"
-    ), header=None
-).sum(axis=1).to_numpy()[:T1]
+tot_pop_2025_2050_2gen = (
+    pd.read_csv(
+        os.path.join(
+            main_dir,
+            "2nd_gen",
+            "demographic_data",
+            "population_distribution.csv",
+        ),
+        header=None,
+    )
+    .sum(axis=1)
+    .to_numpy()[:T1]
+)
 
 print(
-    f"FIG 1: 1st-gen population change relative to baseline in 2050 " +
-    f"is {tot_pop_2025_2050_1gen[-1] - tot_pop_2025_2050_base[-1]:,.0f}."
+    f"FIG 1: 1st-gen population change relative to baseline in 2050 "
+    + f"is {tot_pop_2025_2050_1gen[-1] - tot_pop_2025_2050_base[-1]:,.0f}."
 )
 print(
-    f"FIG 1: 2nd-gen population change relative to baseline in 2050 " +
-    f"is {tot_pop_2025_2050_2gen[-1] - tot_pop_2025_2050_base[-1]:,.0f}."
+    f"FIG 1: 2nd-gen population change relative to baseline in 2050 "
+    + f"is {tot_pop_2025_2050_2gen[-1] - tot_pop_2025_2050_base[-1]:,.0f}."
 )
 
 fig1, ax1 = plt.subplots()
 ax1.plot(
-    years1, (tot_pop_2025_2050_1gen - tot_pop_2025_2050_base)/1e6,
-    linestyle='-', linewidth=3, color='blue', marker='^',
-    markeredgecolor='black', label='1st gen minus baseline'
+    years1,
+    (tot_pop_2025_2050_1gen - tot_pop_2025_2050_base) / 1e6,
+    linestyle="-",
+    linewidth=3,
+    color="blue",
+    marker="^",
+    markeredgecolor="black",
+    label="1st gen minus baseline",
 )
 ax1.vlines(
-    x=2030, ymin=-0.1, ymax=1.5, color='blue', linestyle=':',
+    x=2030,
+    ymin=-0.1,
+    ymax=1.5,
+    color="blue",
+    linestyle=":",
     # label="2030 begin effective year, 1st gen"
 )
 ax1.vlines(
-    x=2034.85, ymin=-0.1, ymax=1.5, color='blue', linestyle='--',
+    x=2034.85,
+    ymin=-0.1,
+    ymax=1.5,
+    color="blue",
+    linestyle="--",
     # label="2035 full effective year, 1st gen"
 )
 ax1.plot(
-    years1, (tot_pop_2025_2050_2gen - tot_pop_2025_2050_base)/1e6,
-    linestyle='-', linewidth=3, color='green', marker='o',
-    markeredgecolor='black', label='2nd gen minus baseline'
+    years1,
+    (tot_pop_2025_2050_2gen - tot_pop_2025_2050_base) / 1e6,
+    linestyle="-",
+    linewidth=3,
+    color="green",
+    marker="o",
+    markeredgecolor="black",
+    label="2nd gen minus baseline",
 )
 ax1.vlines(
-    x=2035.15, ymin=-0.1, ymax=1.5, color='green', linestyle=':',
+    x=2035.15,
+    ymin=-0.1,
+    ymax=1.5,
+    color="green",
+    linestyle=":",
     # label="2035 begin effective year, 2nd gen"
 )
 ax1.vlines(
-    x=2045, ymin=-0.1, ymax=1.5, color='green', linestyle='--',
+    x=2045,
+    ymin=-0.1,
+    ymax=1.5,
+    color="green",
+    linestyle="--",
     # label="2045 full effective year, 2nd gen"
 )
 plt.grid(
-    visible=True, which='major', axis='both', color='0.5', linestyle='--',
-    linewidth=0.3
+    visible=True,
+    which="major",
+    axis="both",
+    color="0.5",
+    linestyle="--",
+    linewidth=0.3,
 )
 plt.ylim(-0.1, 1.2)
 plt.xlabel("Year")
@@ -166,16 +213,28 @@ fert_rates_adjust = shift_bio_clock(
 fert_rates_1year = fert_rates_adjust[final_effect_period + 1, :]
 fig2a, ax2a = plt.subplots()
 ax2a.plot(
-    ages2a, surv_rates_base, linestyle=':', linewidth=1, color='blue',
-    label='Baseline'
+    ages2a,
+    surv_rates_base,
+    linestyle=":",
+    linewidth=1,
+    color="blue",
+    label="Baseline",
 )
 ax2a.plot(
-    ages2a, surv_rates_1year, linestyle='--', linewidth=1, color='green',
-    label=r'One-year shift (age $\geq$ 40)'
+    ages2a,
+    surv_rates_1year,
+    linestyle="--",
+    linewidth=1,
+    color="green",
+    label=r"One-year shift (age $\geq$ 40)",
 )
 plt.grid(
-    visible=True, which='major', axis='both', color='0.5', linestyle='--',
-    linewidth=0.3
+    visible=True,
+    which="major",
+    axis="both",
+    color="0.5",
+    linestyle="--",
+    linewidth=0.3,
 )
 plt.xticks(np.arange(0, 101, 10))
 plt.xlabel(r"Age $s$ (years)")
@@ -192,16 +251,28 @@ plt.close()
 
 fig2b, ax2b = plt.subplots()
 ax2b.plot(
-    ages2a, fert_rates_base_TP[0, :], linestyle=':', linewidth=1, color='blue',
-    label='Baseline'
+    ages2a,
+    fert_rates_base_TP[0, :],
+    linestyle=":",
+    linewidth=1,
+    color="blue",
+    label="Baseline",
 )
 ax2b.plot(
-    ages2a, fert_rates_1year, linestyle='--', linewidth=1, color='green',
-    label=r'One-year shift (age $\geq$ 40)'
+    ages2a,
+    fert_rates_1year,
+    linestyle="--",
+    linewidth=1,
+    color="green",
+    label=r"One-year shift (age $\geq$ 40)",
 )
 plt.grid(
-    visible=True, which='major', axis='both', color='0.5', linestyle='--',
-    linewidth=0.3
+    visible=True,
+    which="major",
+    axis="both",
+    color="0.5",
+    linestyle="--",
+    linewidth=0.3,
 )
 plt.xlim(-2, 102)
 plt.xticks(np.arange(0, 101, 10))
@@ -236,20 +307,36 @@ avg_hrly_earn_shift[39:] = avg_hrly_earn_shift[38:-1]
 
 fig3, ax3 = plt.subplots()
 ax3.plot(
-    ages3[:60], avg_hrly_earn[:60], linestyle='-', linewidth=1, color='blue',
-    label='Baseline, from data'
+    ages3[:60],
+    avg_hrly_earn[:60],
+    linestyle="-",
+    linewidth=1,
+    color="blue",
+    label="Baseline, from data",
 )
 ax3.plot(
-    ages3[59:], avg_hrly_earn[59:], linestyle='--', linewidth=1, color='blue',
-    label='Baseline, extrapolated (scarce data)'
+    ages3[59:],
+    avg_hrly_earn[59:],
+    linestyle="--",
+    linewidth=1,
+    color="blue",
+    label="Baseline, extrapolated (scarce data)",
 )
 ax3.plot(
-    ages3, avg_hrly_earn_shift, linestyle=':', linewidth=1, color='green',
-    label='Reform, one-year shift (age ≥ 40)'
+    ages3,
+    avg_hrly_earn_shift,
+    linestyle=":",
+    linewidth=1,
+    color="green",
+    label="Reform, one-year shift (age ≥ 40)",
 )
 plt.grid(
-    visible=True, which='major', axis='both', color='0.5', linestyle='--',
-    linewidth=0.3
+    visible=True,
+    which="major",
+    axis="both",
+    color="0.5",
+    linestyle="--",
+    linewidth=0.3,
 )
 plt.xlim(19, 102)
 plt.xticks(np.arange(20, 101, 10))
@@ -258,8 +345,9 @@ plt.ylim(11, 54)
 plt.ylabel(r"Avg. hourly earnings (\$)")
 plt.legend()
 plt.title(
-    "Figure 3. Lifecycle profiles of U.S. hourly earnings: \n baseline " +
-    "versus simulated 1-year shift in productivity rates by age")
+    "Figure 3. Lifecycle profiles of U.S. hourly earnings: \n baseline "
+    + "versus simulated 1-year shift in productivity rates by age"
+)
 plt.savefig(os.path.join(images_dir, "fig3_abil_by_age.png"))
 # plt.show()
 plt.close()
@@ -300,24 +388,44 @@ pop_dist_adj_ss = (
 )
 fig4, ax4 = plt.subplots()
 ax4.plot(
-    ages2a, pop_dist_2026, linestyle='-', linewidth=1, color='blue',
-    label='2026 pop.'
+    ages2a,
+    pop_dist_2026,
+    linestyle="-",
+    linewidth=1,
+    color="blue",
+    label="2026 pop.",
 )
 ax4.plot(
-    ages2a, pop_dist_2065, linestyle='--', linewidth=1, color='green',
-    label='2065 pop.'
+    ages2a,
+    pop_dist_2065,
+    linestyle="--",
+    linewidth=1,
+    color="green",
+    label="2065 pop.",
 )
 ax4.plot(
-    ages2a, pop_dist_2100, linestyle=':', linewidth=1, color='red',
-    label='2100 pop.'
+    ages2a,
+    pop_dist_2100,
+    linestyle=":",
+    linewidth=1,
+    color="red",
+    label="2100 pop.",
 )
 ax4.plot(
-    ages2a, pop_dist_adj_ss, linestyle='-', linewidth=1, color='black',
-    label='Adj. SS pop.'
+    ages2a,
+    pop_dist_adj_ss,
+    linestyle="-",
+    linewidth=1,
+    color="black",
+    label="Adj. SS pop.",
 )
 plt.grid(
-    visible=True, which='major', axis='both', color='0.5', linestyle='--',
-    linewidth=0.3
+    visible=True,
+    which="major",
+    axis="both",
+    color="0.5",
+    linestyle="--",
+    linewidth=0.3,
 )
 plt.xlim(-2, 102)
 plt.xticks(np.arange(0, 101, 10))
@@ -328,8 +436,8 @@ yticks = np.arange(0, 0.015, 0.002)
 plt.yticks(yticks, [f"{np.round(y*100, 1)}%" for y in yticks])
 plt.legend()
 plt.title(
-    "Figure 4.Evolution of the US population distribution \n over time: " +
-    "2026-2100"
+    "Figure 4.Evolution of the US population distribution \n over time: "
+    + "2026-2100"
 )
 plt.savefig(os.path.join(images_dir, "fig4_pop_dist_over_time.png"))
 # plt.show()
@@ -343,112 +451,165 @@ population, with alternative results of scenario analyses
 """
 # Create the data
 interventions = [
-    "Brain\nAging", "Ovarian\nAging", "41 Is the\nNew 40", "66 Is the\nNew 65",
-    "1st Gen.,\n11% Ag 65+", "1st Gen.,\n18.5% Ag 65+",
-    "2nd Gen.,\n50% Age 40+", "2nd Gen.,\n50% Age 40+\n(Fast Dev.)"
+    "Brain\nAging",
+    "Ovarian\nAging",
+    "41 Is the\nNew 40",
+    "66 Is the\nNew 65",
+    "1st Gen.,\n11% Ag 65+",
+    "1st Gen.,\n18.5% Ag 65+",
+    "2nd Gen.,\n50% Age 40+",
+    "2nd Gen.,\n50% Age 40+\n(Fast Dev.)",
 ]
 scenarios = ["Pessimistic", "Base", "Optimistic"]
 output_vars = ["avg_diff", "NPV", "total_pop_diff_2050"]
 fig5_panel_labels = [
     "Average Annual GDP Change\n2045-2064 ($billions)",
     "Net Present Value of GDP Change\nOver Decades($trillions)",
-    "Increase in 2050\nPopulation (millions)"
+    "Increase in 2050\nPopulation (millions)",
 ]
 fig5_xlims = [(-30, 570), (-1.8, 37), (-0.1, 2.22)]
 fig5_xticks = [
-    np.arange(0, 551, 100), np.arange(0, 36, 5), np.arange(0, 2.1, 0.5)
+    np.arange(0, 551, 100),
+    np.arange(0, 36, 5),
+    np.arange(0, 2.1, 0.5),
 ]
 data5 = {
     "avg_diff": {
         "Brain\nAging": {
-            "Pessimistic": 156.91, "Base": 201.29, "Optimistic": 245.89
-            },
+            "Pessimistic": 156.91,
+            "Base": 201.29,
+            "Optimistic": 245.89,
+        },
         "Ovarian\nAging": {
-            "Pessimistic": 3.5, "Base": 9.1, "Optimistic": 14.6
+            "Pessimistic": 3.5,
+            "Base": 9.1,
+            "Optimistic": 14.6,
         },
         "41 Is the\nNew 40": {
-            "Pessimistic": 321.5, "Base": 408.4, "Optimistic": 496.0
+            "Pessimistic": 321.5,
+            "Base": 408.4,
+            "Optimistic": 496.0,
         },
         "66 Is the\nNew 65": {
-            "Pessimistic": 256.0, "Base": 326.4, "Optimistic": 397.4
+            "Pessimistic": 256.0,
+            "Base": 326.4,
+            "Optimistic": 397.4,
         },
         "1st Gen.,\n11% Ag 65+": {
-            "Pessimistic": 38.9, "Base": 40.4, "Optimistic": 42.3
+            "Pessimistic": 38.9,
+            "Base": 40.4,
+            "Optimistic": 42.3,
         },
         "1st Gen.,\n18.5% Ag 65+": {
-            "Pessimistic": 76.2, "Base": 78.7, "Optimistic": 81.9
+            "Pessimistic": 76.2,
+            "Base": 78.7,
+            "Optimistic": 81.9,
         },
         "2nd Gen.,\n50% Age 40+": {
-            "Pessimistic": 498.0, "Base": 505.0, "Optimistic": 513.4
+            "Pessimistic": 498.0,
+            "Base": 505.0,
+            "Optimistic": 513.4,
         },
         "2nd Gen.,\n50% Age 40+\n(Fast Dev.)": {
-            "Pessimistic": 514.7, "Base": 522.6, "Optimistic": 531.9
-        }
+            "Pessimistic": 514.7,
+            "Base": 522.6,
+            "Optimistic": 531.9,
+        },
     },
     "NPV": {
         "Brain\nAging": {
-            "Pessimistic": 7.053, "Base": 8.906, "Optimistic": 18.914
-            },
+            "Pessimistic": 7.053,
+            "Base": 8.906,
+            "Optimistic": 18.914,
+        },
         "Ovarian\nAging": {
-            "Pessimistic": 7.353, "Base": 9.261, "Optimistic": 11.169
+            "Pessimistic": 7.353,
+            "Base": 9.261,
+            "Optimistic": 11.169,
         },
         "41 Is the\nNew 40": {
-            "Pessimistic": 21.551, "Base": 27.102, "Optimistic": 32.693
+            "Pessimistic": 21.551,
+            "Base": 27.102,
+            "Optimistic": 32.693,
         },
         "66 Is the\nNew 65": {
-            "Pessimistic": 11.365, "Base": 14.350, "Optimistic": 17.367
+            "Pessimistic": 11.365,
+            "Base": 14.350,
+            "Optimistic": 17.367,
         },
         "1st Gen.,\n11% Ag 65+": {
-            "Pessimistic": 2.343, "Base": 2.416, "Optimistic": 2.504
+            "Pessimistic": 2.343,
+            "Base": 2.416,
+            "Optimistic": 2.504,
         },
         "1st Gen.,\n18.5% Ag 65+": {
-            "Pessimistic": 4.042, "Base": 4.160, "Optimistic": 4.308
+            "Pessimistic": 4.042,
+            "Base": 4.160,
+            "Optimistic": 4.308,
         },
         "2nd Gen.,\n50% Age 40+": {
-            "Pessimistic": 21.872, "Base": 22.239, "Optimistic": 22.674
+            "Pessimistic": 21.872,
+            "Base": 22.239,
+            "Optimistic": 22.674,
         },
         "2nd Gen.,\n50% Age 40+\n(Fast Dev.)": {
-            "Pessimistic": 22.881, "Base": 23.264, "Optimistic": 23.718
-        }
+            "Pessimistic": 22.881,
+            "Base": 23.264,
+            "Optimistic": 23.718,
+        },
     },
     "total_pop_diff_2050": {
         "Brain\nAging": {
-            "Pessimistic": 0.214, "Base": 0.268, "Optimistic": 0.322
-            },
+            "Pessimistic": 0.214,
+            "Base": 0.268,
+            "Optimistic": 0.322,
+        },
         "Ovarian\nAging": {
-            "Pessimistic": 0.313, "Base": 0.391, "Optimistic": 0.470
+            "Pessimistic": 0.313,
+            "Base": 0.391,
+            "Optimistic": 0.470,
         },
         "41 Is the\nNew 40": {
-            "Pessimistic": 1.375, "Base": 1.723, "Optimistic": 2.073
+            "Pessimistic": 1.375,
+            "Base": 1.723,
+            "Optimistic": 2.073,
         },
         "66 Is the\nNew 65": {
-            "Pessimistic": 0.939, "Base": 1.178, "Optimistic": 1.419
+            "Pessimistic": 0.939,
+            "Base": 1.178,
+            "Optimistic": 1.419,
         },
         "1st Gen.,\n11% Ag 65+": {
-            "Pessimistic": 0.260, "Base": 0.275, "Optimistic": 0.294
+            "Pessimistic": 0.260,
+            "Base": 0.275,
+            "Optimistic": 0.294,
         },
         "1st Gen.,\n18.5% Ag 65+": {
-            "Pessimistic": 0.435, "Base": 0.460, "Optimistic": 0.491
+            "Pessimistic": 0.435,
+            "Base": 0.460,
+            "Optimistic": 0.491,
         },
         "2nd Gen.,\n50% Age 40+": {
-            "Pessimistic": 1.050, "Base": 1.111, "Optimistic": 1.182
+            "Pessimistic": 1.050,
+            "Base": 1.111,
+            "Optimistic": 1.182,
         },
         "2nd Gen.,\n50% Age 40+\n(Fast Dev.)": {
-            "Pessimistic": 1.259, "Base": 1.332, "Optimistic": 1.418
-        }
-    }
+            "Pessimistic": 1.259,
+            "Base": 1.332,
+            "Optimistic": 1.418,
+        },
+    },
 }
 
 # Set up the plot
-fig5, axs5 = plt.subplots(nrows=1, ncols=3, figsize=(10,7))
+fig5, axs5 = plt.subplots(nrows=1, ncols=3, figsize=(10, 7))
 
 # Define markers for each scenario
 markers = {"Pessimistic": "s", "Base": "o", "Optimistic": "^"}
 
 for i, out_var in enumerate(output_vars):
-    axs5[i].vlines(
-        x=0, ymin=-1.0, ymax=8, color='black', linestyle='--'
-    )
+    axs5[i].vlines(x=0, ymin=-1.0, ymax=8, color="black", linestyle="--")
     # Plot each scenario
     for scenario in scenarios:
         x_vals = []
@@ -456,11 +617,15 @@ for i, out_var in enumerate(output_vars):
 
         for j, intervention in enumerate(interventions):
             x_vals.append(data5[out_var][intervention][scenario])
-            y_vals.append(7-j)
+            y_vals.append(7 - j)
 
         axs5[i].scatter(
-            x_vals, y_vals, marker=markers[scenario], s=60, label=scenario,
-            edgecolor='black'
+            x_vals,
+            y_vals,
+            marker=markers[scenario],
+            s=60,
+            label=scenario,
+            edgecolor="black",
         )
 
     # Set labels and formatting
@@ -479,15 +644,17 @@ for i, out_var in enumerate(output_vars):
     if i == 1:
         # Add legend at bottom
         axs5[i].legend(
-            loc='upper center', ncol=3, title="Scenario",
-            bbox_to_anchor=(0.5, -0.15)
+            loc="upper center",
+            ncol=3,
+            title="Scenario",
+            bbox_to_anchor=(0.5, -0.15),
         )
 # Remove y-axis labels from second and third plots
-axs5[1].tick_params(axis='y', labelleft=False)
-axs5[2].tick_params(axis='y', labelleft=False)
+axs5[1].tick_params(axis="y", labelleft=False)
+axs5[2].tick_params(axis="y", labelleft=False)
 
 # Set font
-plt.rcParams.update({'font.size': 14, 'font.family': 'Arial Narrow'})
+plt.rcParams.update({"font.size": 14, "font.family": "Arial Narrow"})
 
 # Adjust layout to prevent label cutoff
 plt.tight_layout()
@@ -498,8 +665,9 @@ plt.subplots_adjust(wspace=0.1)
 
 # Save the figure
 plt.savefig(
-    os.path.join(images_dir,'fig5_gdp_pop_impacts.png'),
-    dpi=300, bbox_inches='tight'
+    os.path.join(images_dir, "fig5_gdp_pop_impacts.png"),
+    dpi=300,
+    bbox_inches="tight",
 )
 # plt.show()
 plt.close()
