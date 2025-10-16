@@ -3,13 +3,12 @@
 import numpy as np
 import pickle
 import multiprocessing
-import requests
+import pkgutil
 from distributed import Client
 import os
 import json
 import time
 import argparse
-from ogusa.calibrate import Calibration
 from ogcore.parameters import Specifications
 from ogcore.execute import runner
 from ogcore.utils import safe_read_pickle, shift_bio_clock
@@ -46,11 +45,9 @@ def main(simulation_json):
     """
     Read in OG-USA default parameters
     """
-    resp = requests.get(
-        "https://raw.githubusercontent.com/PSLmodels/OG-USA/master/ogusa/" +
-        "ogusa_default_parameters.json"
-    )
-    ogusa_default_params = json.loads(resp.text)
+    # read in from package
+    data = pkgutil.get_data("ogusa", "ogusa_default_parameters.json")
+    ogusa_default_params = json.loads(data)
 
     # update some of these defaults that will be used in all simulations
     ogusa_default_params["tax_func_type"] = "HSV"
@@ -83,6 +80,7 @@ def main(simulation_json):
             pre_pop_dist_baseline,
         ) = safe_read_pickle(os.path.join(sim_dir, "demog_vars_baseline.pkl"))
     else:
+        print("Generating baseline demographics")
         fert_rates_baseline = demog.get_fert(
             start_year=p.start_year, end_year=p.start_year
         )
@@ -183,9 +181,16 @@ def main(simulation_json):
     client = Client(n_workers=num_workers)
 
     # Run model
-    start_time = time.time()
-    # runner(p, time_path=True, client=client)
-    print("run time = ", time.time() - start_time)
+    # check if baseline has already been run
+    if os.path.exists(
+        os.path.join(base_dir, "SS", "SS_vars.pkl")
+    ) & os.path.exists(os.path.join(base_dir, "TPI", "TPI_vars.pkl")):
+        print("Baseline already run")
+    else:
+        print("Running baseline")
+        start_time = time.time()
+        runner(p, time_path=True, client=client)
+        print("run time = ", time.time() - start_time)
 
     client.close()
     del client
